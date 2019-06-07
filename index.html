@@ -1,27 +1,68 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!doctype html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
+    <title>Shopping List Check Off</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
     <script src="angular.min.js"></script>
     <script src="app.js"></script>
-    <title>Lunch Checker</title>
+    <style>
+      .emptyMessage {
+        font-weight: bold;
+        color: red;
+        font-size: 1.2em;
+      }
+      li {
+        margin-bottom: 7px;
+        font-size: 1.2em;
+      }
+      li > button {
+        margin-left: 6px;
+      }
+      button > span {
+        color: green;
+      }
+    </style>
   </head>
-  <body ng-app="LunchCheck">
-    <div ng-controller="LunchCheckController">
-      <div>
-        <h1>Lunch Checker</h1><br>
-        <div>
-          <input type="text"
-                  ng-style="box.myStyle"
-                      placeholder="list comma separated items you usually eat for lunch"
-                        ng-model="list"><br><br>
-        <button ng-click="message()">Check If Too Much</button><br>
-        </div>
-        We DON'T accept empty items.
-      </div>
-      <div ng-style="msg.style">
-          <b>{{result}}</b>
-      </div>
+<body ng-app="ShoppingListCheckOff">
+  <div class="col-md-6" ng-controller='ToBuyController as list1'>
+  <div class="container">
+    <h1>Shopping List Check Off</h1>
+      <input type="text" ng-model="list1.itemName" placeholder="item name">
+      <input type="text" ng-model="list1.itemQuantity" placeholder="quantity">
+      <button ng-click="list1.addItem();">Add Item to shopping List</button>
+
+  <div class="row">
+
+    <!-- To Buy List -->
+     <h2>To Buy:</h2>
+     <ul>
+       <li ng-repeat="item in list1.buyItems">
+         Buy {{item.quantity}}  {{item.name}}
+          <button class="btn btn-default"
+          ng-click="list1.addtoBoughtList($index);">
+          <span class="glyphicon glyphicon-ok"></span> Bought</button>
+      </li>
+      </ul>
+     <div class="emptyMessage" ng-if="list1.buyItems.length === 0">Everything is bought!</div>
     </div>
-  </body>
+
+    <!-- Already Bought List -->
+     <h2>Already Bought:</h2>
+       <div class="col-md-6" ng-controller='AlreadyBoughtController as list2'>
+     <ul>
+       <li ng-repeat="boughtItem in list2.boughtItems">
+        Bought  {{boughtItem.quantity}}  {{boughtItem.name}}</li>
+       <!-- <button
+       ng-click="list2.removeItem($index);">
+       Remove Item</button> -->
+     </ul>
+     <div class="emptyMessage"
+      ng-if="list2.boughtItems.length === 0">
+      Nothing bought yet.</div>
+    </div>
+  </div>
+</div>
+
+</body>
 </html>
