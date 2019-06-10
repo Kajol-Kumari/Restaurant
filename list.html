@@ -1,0 +1,6 @@
+
+<li ng-repeat="category in menu.categories">
+  (<a href="" ng-click="menu.LogMenuItems(category.short_name);">{{ category.short_name }}</a>)
+  {{ category.name }}
+  <button ng-click="list.removeItem($index);">Remove Item</button>
+</li>

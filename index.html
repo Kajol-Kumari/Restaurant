@@ -7,16 +7,57 @@
     <title>Module 1</title>
   </head>
   <body ng-app="Namecalc">
-  <h1>Name value Clculator</h1>
-  <div ng-controller="namecalccontroller">
-    <div>
-      <input type="text"
-        ng-model="name"
-          ng-keyup="displayNumeric()";
-          ng-blur="Uprcase();">
+    <h1>$http service use</h1>
+  <!-- <div ng-controller='Parentcontroller1'>
+    <div ng-controller='Childcontroller1'>
     </div>
-    Total value of name {{name}}=
-    {{totalvalue}}
- </div>
+  </div> -->
+    <h3>Shopping List #1</h3>
+    <div ng-controller='MenuCategoriesController as menu'>
+    <!-- <input type="text" ng-model="list.itemName" placeholder="item name">
+    <input type="text" ng-model="list.itemQuantity" placeholder="item quantity">
+    <button ng-click="list.addItem();">Add item </button> -->
+<ol>
+  <list-item
+    items = "menu.items"
+    bad-remove = "menu.removeItem"></list-item>
+</ol>
+<!-- <div ng-if="list.errorMessage" class="error"> #ng-show is same as ng-if and ng-hide is opposite of ng-if or ng-show  -->
+  <!-- Error: {{ list.errorMessage}} -->
+</div>
+  <!-- <div id="list2" ng-controller='shoppingListController2 as list2'>
+<h3>Shopping List #2((limited to 3 items))</h3>
+<input type="text" ng-model="list2.itemName" placeholder="item name">
+<input type="text" ng-model="list2.itemQuantity" placeholder="item quantity">
+<button ng-click="list2.addItem();">Add item </button>
+        <ol>
+          <li ng-repeat="item in list2.items">
+              {{item.quantity}} of {{item.name}}
+              <button ng-click="list2.removeItem($index);">Remove item</button>
+          </li>
+        </ol>
+  </div>
+  origional message : {{sayMessage()}}<br>
+  LovesMessage : {{sayLovesMessage()}}<br>
+  Truth : {{sayLovesMessage() | truth : 'custom' :'making'}}<br>
+  BIG TRUTH : {{sayLovesMessage() | truth : 'custom' :'making' | uppercase }} -->
+  <!--<h1>Digest cycle</h1>
+  <button ng-click="upCounter()">Increment Counter</button><br><br>
+  Regular counter : {{counter}}-->
+  <!-- <button ng-click="showNumofwatchers()">Log # of watchers</button><br>
+  <button ng-click="setFullName()">Set Full Name</button><br>
+  Full Name is : {{::fullName}}<br>
+  <button ng-click="logFirstName()">Log First Name</button><br>
+  <button ng-click="logFulName()">Log Full Name</button><br>
+  <div>
+    <input type="text" ng-model="firstName"> -->
+  <!-- <div>
+    <h3>shopping List</h3>
+    <input type="text" ng-model="search">
+    <ul>
+      <li ng-repeat = "item in shoppingList | filter : search">{{item}}</li>
+    </ul>
+  </div>
+</div> -->
 </body>
 </html>
