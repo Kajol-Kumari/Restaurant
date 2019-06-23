@@ -1,81 +1,95 @@
-(function(){
-  'use strict';
+(function () {
+  'use strict'
 
-angular.module('NarrowItDownApp',[])
-.controller('NarrowItDownController',NarrowItDownController)
-.service('MenuSearchService',MenuSearchService)
-.directive('foundItems', foundItemsDirective );
+angular.module('NarrowItDownApp', [])
+.controller('NarrowItDownController', NarrowItDownController)
+.service('MenuSearchService', MenuSearchService)
+.directive('foundItems', FoundItemsDirective)
+.constant('ApiBasePath', "http://davids-restaurant.herokuapp.com");
 
-function  foundItemsDirective(){
+
+NarrowItDownController.$inject = ['MenuSearchService'];
+function NarrowItDownController(MenuSearchService) {
+  var narrowCtrl = this;
+  narrowCtrl.found = MenuSearchService.getItems();
+  narrowCtrl.searchMenuItems = function () {
+    if (narrowCtrl.searchTerm === "") {
+      MenuSearchService.clear();
+    } else {
+      MenuSearchService.getMatchedMenuItems(narrowCtrl.searchTerm)
+      .then(function(result) {
+        narrowCtrl.found = result;
+      });
+    }
+  }
+
+  narrowCtrl.removeItem = function(itemIndex) {
+    MenuSearchService.removeItem(itemIndex);
+  };
+}
+
+function FoundItemsDirective() {
   var ddo = {
-    restrict : 'E',
-    templateUrl : 'found.html',
-    scope : {
-      items : '<',
-      onRemove : '&'
-  }
-};
- return ddo;
+    templateUrl: 'found.html',
+    scope: {
+      items: '<',
+      onRemove: '&'
+    },
+    controller: FoundItemsDirectiveController,
+    controllerAs: 'foundCtrl',
+    bindToController: true
+  };
+
+  return ddo;
 }
 
-NarrowItDownController.$inject = ['MenuSearchService']
-function NarrowItDownController(MenuSearchService){
-  var narrowIt = this;
-  narrowIt.found = [];
-  narrowIt.searchItems = function(){
-    narrowIt.found = MenuSearchService.getMatchedMenuItems(narrowIt.searchTerm);
+function FoundItemsDirectiveController() {
+  var foundCtrl = this;
+
+  foundCtrl.isNothingFound = function() {
+    if (foundCtrl.items.length === 0) {
+      return true;
+    }
+    return false;
+  };
 }
 
-narrowIt.remove = function(index){
-  narrowIt.found.splice(index, 1);
-  }
-}
-
-MenuSearchService.$inject =['$http'];
-function MenuSearchService($http){
+MenuSearchService.$inject = ['$http', 'ApiBasePath'];
+function MenuSearchService($http, ApiBasePath) {
   var service = this;
+  var foundItems = [];
 
-  service.getMatchedMenuItems = function(searchTerm){
-    if(!service.data)
-    {
-      service.getData();
+  service.getMatchedMenuItems = function(searchTerm) {
+    foundItems.splice(0, foundItems.length);
+    if (searchTerm === "") {
+      return foundItems;
     }
-    if(searchTerm === "")
-    {
-      return [];
-    }
-
-    var items = service.data.menu_items;
-    var found = [];
-
-    for(var i= 0; i < items.length ; i++)
-    {
-      var desc = items[i].description;
-      if(desc.indexOf(searchTerm) !== -1)
-      {
-        found.push(items[i]);
+    return $http({
+      method: "GET",
+      url: (ApiBasePath + "/menu_items.json")
+    }).then(function(result) {
+      var allItems = result.data.menu_items;
+      foundItems.splice(0, foundItems.length);
+      for (var index = 0; index < allItems.length; ++index) {
+        if (allItems[index].description.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+          foundItems.push(allItems[index]);
+        }
       }
-    }
+      return foundItems;
+    });
+  };
 
-  console.dir(found);
-  return found;
-};
+  service.clear = function() {
+    foundItems.splice(0, foundItems.length);
+  }
 
-service.getData = function(){
-  $http({
-     method : "GET",
-     url : ("https://davids-restaurant.herokuapp.com/menu_items.json")
-   })
-   .then(function(result){
-     console.log(result.data);
-     service.data = result.data;
-   },
-   function(result){
-     console.log("Hello "+ result.data);
-     service.getData();
-   });
-}
-  service.getData();
+  service.removeItem = function(itemIndex) {
+    foundItems.splice(itemIndex, 1);
+  };
+
+  service.getItems = function() {
+    return foundItems;
+  };
 }
 
 })();
