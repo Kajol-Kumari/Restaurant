@@ -1,95 +1,81 @@
-(function () {
-  'use strict'
+(function(){
+  'use strict';
 
-angular.module('NarrowItDownApp', [])
-.controller('NarrowItDownController', NarrowItDownController)
-.service('MenuSearchService', MenuSearchService)
-.directive('foundItems', FoundItemsDirective)
-.constant('ApiBasePath', "http://davids-restaurant.herokuapp.com");
+angular.module('NarrowItDownApp',[])
+.controller('NarrowItDownController',NarrowItDownController)
+.service('MenuSearchService',MenuSearchService)
+.directive('foundItems', foundItemsDirective );
 
-
-NarrowItDownController.$inject = ['MenuSearchService'];
-function NarrowItDownController(MenuSearchService) {
-  var narrowCtrl = this;
-  narrowCtrl.found = MenuSearchService.getItems();
-  narrowCtrl.searchMenuItems = function () {
-    if (narrowCtrl.searchTerm === "") {
-      MenuSearchService.clear();
-    } else {
-      MenuSearchService.getMatchedMenuItems(narrowCtrl.searchTerm)
-      .then(function(result) {
-        narrowCtrl.found = result;
-      });
-    }
-  }
-
-  narrowCtrl.removeItem = function(itemIndex) {
-    MenuSearchService.removeItem(itemIndex);
-  };
-}
-
-function FoundItemsDirective() {
+function  foundItemsDirective(){
   var ddo = {
-    templateUrl: 'found.html',
-    scope: {
-      items: '<',
-      onRemove: '&'
-    },
-    controller: FoundItemsDirectiveController,
-    controllerAs: 'foundCtrl',
-    bindToController: true
-  };
-
-  return ddo;
-}
-
-function FoundItemsDirectiveController() {
-  var foundCtrl = this;
-
-  foundCtrl.isNothingFound = function() {
-    if (foundCtrl.items.length === 0) {
-      return true;
-    }
-    return false;
-  };
-}
-
-MenuSearchService.$inject = ['$http', 'ApiBasePath'];
-function MenuSearchService($http, ApiBasePath) {
-  var service = this;
-  var foundItems = [];
-
-  service.getMatchedMenuItems = function(searchTerm) {
-    foundItems.splice(0, foundItems.length);
-    if (searchTerm === "") {
-      return foundItems;
-    }
-    return $http({
-      method: "GET",
-      url: (ApiBasePath + "/menu_items.json")
-    }).then(function(result) {
-      var allItems = result.data.menu_items;
-      foundItems.splice(0, foundItems.length);
-      for (var index = 0; index < allItems.length; ++index) {
-        if (allItems[index].description.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
-          foundItems.push(allItems[index]);
-        }
-      }
-      return foundItems;
-    });
-  };
-
-  service.clear = function() {
-    foundItems.splice(0, foundItems.length);
+    restrict : 'E',
+    templateUrl : 'found.html',
+    scope : {
+      items : '<',
+      onRemove : '&'
   }
+};
+ return ddo;
+}
 
-  service.removeItem = function(itemIndex) {
-    foundItems.splice(itemIndex, 1);
-  };
+NarrowItDownController.$inject = ['MenuSearchService']
+function NarrowItDownController(MenuSearchService){
+  var narrowIt = this;
+  narrowIt.found = [];
+  narrowIt.searchItems = function(){
+    narrowIt.found = MenuSearchService.getMatchedMenuItems(narrowIt.searchTerm);
+}
 
-  service.getItems = function() {
-    return foundItems;
-  };
+narrowIt.remove = function(index){
+  narrowIt.found.splice(index, 1);
+  }
+}
+
+MenuSearchService.$inject =['$http'];
+function MenuSearchService($http){
+  var service = this;
+
+  service.getMatchedMenuItems = function(searchTerm){
+    if(!service.data)
+    {
+      service.getData();
+    }
+    if(searchTerm === "")
+    {
+      return [];
+    }
+
+    var items = service.data.menu_items;
+    var found = [];
+
+    for(var i= 0; i < items.length ; i++)
+    {
+      var desc = items[i].description;
+      if(desc.indexOf(searchTerm) !== -1)
+      {
+        found.push(items[i]);
+      }
+    }
+
+  console.dir(found);
+  return found;
+};
+
+service.getData = function(){
+  $http({
+     method : "GET",
+     url : ("https://davids-restaurant.herokuapp.com/menu_items.json")
+   })
+   .then(function(result){
+     console.log(result.data);
+     service.data = result.data;
+   },
+   function(result){
+     console.log("Hello "+ result.data);
+     service.getData();
+   });
+}
+  service.getData();
 }
 
 })();
