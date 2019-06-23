@@ -13,9 +13,23 @@ function  foundItemsDirective(){
     scope : {
       items : '<',
       onRemove : '&'
-  }
+  },
+  controller: FoundItemsDirectiveController,
+  controllerAs: 'foundCtrl',
+  bindToController: true
+
 };
  return ddo;
+}
+
+function FoundItemsDirectiveController() {
+  var foundCtrl = this;
+  foundCtrl.isNothingFound = function() {
+    if (foundCtrl.items.length === 0) {
+      return true;
+    }
+    return false;
+  };
 }
 
 NarrowItDownController.$inject = ['MenuSearchService']
