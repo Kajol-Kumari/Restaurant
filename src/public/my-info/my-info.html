@@ -1,0 +1,23 @@
+<div class="container">
+  <div class = "my-info-title">
+    <center><h3>My Informations</h3></center><br>
+  </div>
+  <center>
+    <div class="error" ng-if="myInfoCtrl.userPref === undefned">
+    Not Signed Up Yet.
+    <a ui-sref="public.signup">
+      <class="hidden-xs">
+      Sign up Now!!
+    </a>
+  </div>
+  </center>
+
+  <ul ng-if="myInfoCtrl.userPref != undefned">
+    <li>First Name : {{myInfoCtrl.userPref.firstName}}</li>
+    <li>Last Name : {{myInfoCtrl.userPref.lastName}}</li>
+    <li>Email : {{myInfoCtrl.userPref.email}}</li>
+    <li>Phone Number : {{myInfoCtrl.userPref.phone}}</li>
+    <li>Favourite Item :{{myInfoCtrl.userPref.favourite.toUpperCase()}}<br><br>
+       <menu-item menu-item = "myInfoCtrl.userPref.favouriteMenuItem"></menu-item></li>
+  </ul>
+</div>
